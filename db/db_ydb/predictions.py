@@ -61,6 +61,8 @@ def bulk_upsert(table_client, list_predictions: list[Prediction]) -> None:
         )
         if operation is not None:
             logger.info(f"Bulk upsert was completed successfully!")
+        else:
+            logger.error(f"Bulk upsert failed with list_predictions: {list_predictions}")
     except Exception as err:
         logger.critical(f"Error during bulk upsert: {err}", exc_info=True)
     return
