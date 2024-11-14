@@ -15,7 +15,7 @@ full_path: str = '{}/ynyb/predictions/'.format(settings.YDB_DATABASE.removeprefi
 table_name: str = 'predictions'
 
 
-def create_table_predictions_if_not_exists(_pool) -> None:
+def __create_table_predictions_if_not_exists(_pool) -> None:
     global full_path, table_name
 
     def callee(session) -> None:
@@ -42,7 +42,7 @@ def create_table_predictions_if_not_exists(_pool) -> None:
     return _pool.retry_operation_sync(callee)
 
 
-def bulk_upsert(table_client, list_predictions: list[Prediction]) -> Any | None:
+def __bulk_upsert(table_client, list_predictions: list[Prediction]) -> Any | None:
     global full_path, table_name
     logger.info(f"Start bulk upsert {table_name} with {[p.issue_key for p in list_predictions]}")
     column_types = (
@@ -71,6 +71,38 @@ def bulk_upsert(table_client, list_predictions: list[Prediction]) -> Any | None:
     return operation
 
 
+def __select_max_prediction_id(_pool) -> int:
+    global full_path, table_name
+
+    def callee(session) -> int:
+        logger.info(f"Getting MAX prediction_id of the table: {full_path}{table_name}")
+        max_prediction_id = session.transaction(ydb.SerializableReadWrite()).execute(
+            """
+            PRAGMA TablePathPrefix("{}");
+            SELECT MAX(prediction_id) as max_prediction_id FROM {};
+            """.format(
+                full_path, table_name
+            ),
+            commit_tx=True,
+        )[0].rows[0].max_prediction_id
+
+        logger.info(f"max_prediction_id is received: {max_prediction_id}")
+        return max_prediction_id
+
+    return _pool.retry_operation_sync(callee)
+
+
+def get_max_prediction_id() -> int:
+    with ydb.Driver(
+        endpoint=settings.YDB_ENDPOINT,
+        database=settings.YDB_DATABASE,
+        credentials=credentials,
+    ) as driver:
+        driver.wait(timeout=5, fail_fast=True)
+        with ydb.SessionPool(driver) as pool:
+            return __select_max_prediction_id(pool)
+
+
 def add_list_predictions(list_predictions: list[Prediction]) -> Any | None:
     with ydb.Driver(
         endpoint=settings.YDB_ENDPOINT,
@@ -80,4 +112,4 @@ def add_list_predictions(list_predictions: list[Prediction]) -> Any | None:
         driver.wait(timeout=5, fail_fast=True)
         # with ydb.SessionPool(driver) as pool:
         #     create_table_predictions_if_not_exists(pool)
-        return bulk_upsert(driver.table_client, list_predictions)
+        return __bulk_upsert(driver.table_client, list_predictions)

@@ -1,1 +1,1 @@
-from .predictions import add_list_predictions
+from .predictions import add_list_predictions, get_max_prediction_id
