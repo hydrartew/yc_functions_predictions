@@ -1,10 +1,6 @@
 from datetime import datetime
-from typing import List, Optional, Any, Literal, Annotated, Callable
 
-from pydantic import (BaseModel, field_validator, AfterValidator, Field, ConfigDict, HttpUrl, ValidationInfo,
-                      computed_field)
-from requests import Response
-from requests.structures import CaseInsensitiveDict
+from pydantic import BaseModel, field_validator
 
 
 class Prediction(BaseModel):
