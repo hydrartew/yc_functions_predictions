@@ -6,7 +6,7 @@ import ydb.iam
 from config_data import settings, credentials
 from schemas import Prediction
 
-logging.config.fileConfig('logging.ini', disable_existing_loggers=False)
+logging.config.fileConfig('logging.ini')
 logger = logging.getLogger('predictions')
 
 
