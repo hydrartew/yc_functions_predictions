@@ -13,7 +13,7 @@ class Prediction(BaseModel):
     author_tg_user_id: int = 0
     author_staff_login: str = 'admin'
     dttm_created: datetime
-    dttm_last_usage: datetime = datetime(1970, 1, 1)
+    dttm_last_usage: datetime = datetime(2100, 1, 1)
     text: str
 
     @field_validator('text')
