@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import ydb
 import ydb.iam
 
@@ -10,16 +8,6 @@ full_path: str = '{}/ynyb/predictions/'.format(settings.YDB_DATABASE.removeprefi
 table_name: str = 'predictions'
 
 
-def test_predictions_for_bulk_upsert():
-    return [
-        Prediction(
-            prediction_id=3,
-            dttm_created=datetime.now(),
-            text='test prediction 1'
-        )
-    ]
-
-
 def create_table_predictions_if_not_exists(_pool) -> None:
     global full_path, table_name
 
@@ -27,18 +15,18 @@ def create_table_predictions_if_not_exists(_pool) -> None:
         print(f"> create_table: {full_path}{table_name}")
         session.execute_scheme(
             """
-                PRAGMA TablePathPrefix("{}");
-                CREATE TABLE IF NOT EXISTS `{}` (
-                    `prediction_id` Uint16 NOT NULL,
-                    `accepted` Bool NOT NULL,
-                    `author_tg_user_id` Uint64 NOT NULL,
-                    `author_staff_login` Utf8 NOT NULL,
-                    `dttm_created` Timestamp NOT NULL,
-                    `dttm_last_usage` Timestamp,
-                    `text` Utf8 NOT NULL,
-                    PRIMARY KEY (`prediction_id`)
-                )
-                """.format(
+            PRAGMA TablePathPrefix("{}");
+            CREATE TABLE IF NOT EXISTS `{}` (
+                `prediction_id` Uint16 NOT NULL,
+                `accepted` Bool NOT NULL,
+                `author_tg_user_id` Uint64 NOT NULL,
+                `author_staff_login` Utf8 NOT NULL,
+                `dttm_created` Timestamp NOT NULL,
+                `dttm_last_usage` Timestamp,
+                `text` Utf8 NOT NULL,
+                PRIMARY KEY (`prediction_id`)
+            )
+            """.format(
                 full_path, table_name
             )
         )
@@ -46,7 +34,7 @@ def create_table_predictions_if_not_exists(_pool) -> None:
     return _pool.retry_operation_sync(callee)
 
 
-def bulk_upsert(table_client):
+def bulk_upsert(table_client, list_predictions: list[Prediction]):
     global full_path, table_name
     column_types = (
         ydb.BulkUpsertColumns()
@@ -58,16 +46,16 @@ def bulk_upsert(table_client):
         .add_column("dttm_last_usage", ydb.OptionalType(ydb.PrimitiveType.Timestamp))
         .add_column("text", ydb.OptionalType(ydb.PrimitiveType.Utf8))
     )
-    rows = test_predictions_for_bulk_upsert()
-    table_client.bulk_upsert('{}{}'.format(full_path, table_name), rows, column_types)
+    table_client.bulk_upsert('{}{}'.format(full_path, table_name), list_predictions, column_types)
 
 
-with ydb.Driver(
+def add_list_predictions(list_predictions: list[Prediction]):
+    with ydb.Driver(
         endpoint=settings.YDB_ENDPOINT,
         database=settings.YDB_DATABASE,
         credentials=credentials,
-) as driver:
-    driver.wait(timeout=5, fail_fast=True)
-    with ydb.SessionPool(driver) as pool:
-        create_table_predictions_if_not_exists(pool)
-        bulk_upsert(driver.table_client)
+    ) as driver:
+        driver.wait(timeout=5, fail_fast=True)
+        with ydb.SessionPool(driver) as pool:
+            create_table_predictions_if_not_exists(pool)
+            bulk_upsert(driver.table_client, list_predictions)
