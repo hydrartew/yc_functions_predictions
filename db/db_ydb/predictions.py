@@ -1,8 +1,14 @@
+import logging.config
+
 import ydb
 import ydb.iam
 
 from config_data import settings, credentials
 from schemas import Prediction
+
+logging.config.fileConfig('logging.ini', disable_existing_loggers=False)
+logger = logging.getLogger('predictions')
+
 
 full_path: str = '{}/ynyb/predictions/'.format(settings.YDB_DATABASE.removeprefix('/'))
 table_name: str = 'predictions'
@@ -12,7 +18,7 @@ def create_table_predictions_if_not_exists(_pool) -> None:
     global full_path, table_name
 
     def callee(session) -> None:
-        print(f"> create_table: {full_path}{table_name}")
+        logger.info(f"Create table if not exists: {full_path}{table_name}")
         session.execute_scheme(
             """
             PRAGMA TablePathPrefix("{}");
@@ -34,8 +40,9 @@ def create_table_predictions_if_not_exists(_pool) -> None:
     return _pool.retry_operation_sync(callee)
 
 
-def bulk_upsert(table_client, list_predictions: list[Prediction]):
+def bulk_upsert(table_client, list_predictions: list[Prediction]) -> None:
     global full_path, table_name
+    logger.info(f"Start bulk upsert: {full_path}")
     column_types = (
         ydb.BulkUpsertColumns()
         .add_column("prediction_id", ydb.OptionalType(ydb.PrimitiveType.Uint16))
@@ -46,7 +53,17 @@ def bulk_upsert(table_client, list_predictions: list[Prediction]):
         .add_column("dttm_last_usage", ydb.OptionalType(ydb.PrimitiveType.Timestamp))
         .add_column("text", ydb.OptionalType(ydb.PrimitiveType.Utf8))
     )
-    table_client.bulk_upsert('{}{}'.format(full_path, table_name), list_predictions, column_types)
+    try:
+        operation = table_client.bulk_upsert(
+            '{}{}'.format(full_path, table_name),
+            list_predictions,
+            column_types
+        )
+        if operation is not None:
+            logger.info(f"Bulk upsert was completed successfully!")
+    except Exception as err:
+        logger.critical(f"Error during bulk upsert: {err}", exc_info=True)
+    return
 
 
 def add_list_predictions(list_predictions: list[Prediction]):
@@ -57,5 +74,5 @@ def add_list_predictions(list_predictions: list[Prediction]):
     ) as driver:
         driver.wait(timeout=5, fail_fast=True)
         with ydb.SessionPool(driver) as pool:
-            create_table_predictions_if_not_exists(pool)
+            # create_table_predictions_if_not_exists(pool)
             bulk_upsert(driver.table_client, list_predictions)
