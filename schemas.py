@@ -11,6 +11,7 @@ class Prediction(BaseModel):
     dttm_created: datetime
     dttm_last_usage: datetime = datetime(2100, 1, 1)
     text: str
+    issue_key: str | None = None
 
     @field_validator('text')
     @classmethod
