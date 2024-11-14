@@ -73,6 +73,6 @@ def add_list_predictions(list_predictions: list[Prediction]):
         credentials=credentials,
     ) as driver:
         driver.wait(timeout=5, fail_fast=True)
-        with ydb.SessionPool(driver) as pool:
-            # create_table_predictions_if_not_exists(pool)
-            bulk_upsert(driver.table_client, list_predictions)
+        # with ydb.SessionPool(driver) as pool:
+        #     create_table_predictions_if_not_exists(pool)
+        bulk_upsert(driver.table_client, list_predictions)
