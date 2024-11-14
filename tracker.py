@@ -10,14 +10,10 @@ logger = logging.getLogger('predictions')
 
 
 class YNYBTracker:
-    def __init__(self,
-                 queue: str = 'YNYB',
-                 key_tag: str = 'ready_to_add_to_db',
-                 key_tag_after_issue_processing: str = 'added_to_db'):
-
-        self.queue = queue
-        self.key_tag = key_tag
-        self.key_tag_after_issue_processing = key_tag_after_issue_processing
+    def __init__(self):
+        self.queue = 'YNYB'
+        self.key_tag = 'ready_to_add_to_db'
+        self.key_tag_after_issue_processing = 'added_to_db'
 
         self.tracker_url = 'https://st.yandex-team.ru/'
 
