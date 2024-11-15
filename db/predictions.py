@@ -53,6 +53,7 @@ def __bulk_upsert(table_client, list_predictions: list[Prediction]) -> Any | Non
         .add_column("dttm_created", ydb.OptionalType(ydb.PrimitiveType.Timestamp))
         .add_column("dttm_last_usage", ydb.OptionalType(ydb.PrimitiveType.Timestamp))
         .add_column("text", ydb.OptionalType(ydb.PrimitiveType.Utf8))
+        .add_column("issue_key", ydb.OptionalType(ydb.PrimitiveType.Utf8))
     )
     operation = None
     try:
