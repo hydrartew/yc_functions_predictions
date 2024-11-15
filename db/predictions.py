@@ -86,6 +86,9 @@ def __select_max_prediction_id(_pool) -> int:
             commit_tx=True,
         )[0].rows[0].max_prediction_id
 
+        if max_prediction_id is None:
+            max_prediction_id = 0
+
         logger.info(f"max_prediction_id is received: {max_prediction_id}")
         return max_prediction_id
 
