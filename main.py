@@ -14,10 +14,13 @@ logging.getLogger('predictions').propagate = False
 logging.getLogger('tracker').propagate = False
 
 
-def get_list_predictions():
-    logger.info('Start take Tracker issues for data_predictions')
+list_issues = ynyb_tracker.get_issues()
 
-    list_issues = ynyb_tracker.get_issues()
+
+def get_list_predictions():
+    global list_issues
+
+    logger.info('Start take Tracker issues for data_predictions')
     current_prediction_id = db.get_max_prediction_id() + 1
 
     _list_predictions = []
@@ -37,6 +40,7 @@ def get_list_predictions():
 
 def main():
     db.add_list_predictions(list_predictions=get_list_predictions())
+    ynyb_tracker.change_key_tag(list_issues)
 
 
 if __name__ == '__main__':
