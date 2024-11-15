@@ -14,6 +14,8 @@ class YNYBTracker:
         self.key_tag = 'ready_to_add_to_db'
         self.excluding_tag = 'added_to_db'
 
+        self.key_component = 188602
+
         self.tracker_url = 'https://st.yandex-team.ru/'
 
         self.token = settings.TRACKER_INTERNAL_TOKEN
@@ -23,8 +25,8 @@ class YNYBTracker:
 
     @property
     def filter_target_issues(self) -> str:
-        return 'Queue: {} tags: {} tags: !{} Status: closed "Sort by": Created ASC'.format(
-            self.queue, self.key_tag, self.excluding_tag
+        return 'Queue: {} Components: {} tags: {} tags: !{} Status: closed "Sort by": Created ASC'.format(
+            self.queue, self.key_component, self.key_tag, self.excluding_tag
         )
 
     def get_issues(self) -> list[Resource]:
