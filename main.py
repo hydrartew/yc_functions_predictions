@@ -38,8 +38,18 @@ def get_list_predictions():
     return _list_predictions
 
 
-def main():
-    db.add_list_predictions(list_predictions=get_list_predictions())
+def main() -> None:
+    global list_issues
+
+    if len(list_issues) == 0:
+        logger.info('Stop the script, because no new predictions/issues')
+        return
+
+    operation = db.add_list_predictions(list_predictions=get_list_predictions())
+    if operation is None:
+        logger.info('The excluding_tag will not be added to the Tracker issues, '
+                    'because an error occurred in the SQL query operation')
+        return
     ynyb_tracker.change_key_tag(list_issues)
 
 
