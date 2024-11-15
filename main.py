@@ -1,21 +1,20 @@
-import logging.config
-
-from datetime import datetime
-
 import iso8601
-from icecream import ic
+from schemas import Prediction
 
 import db
-from schemas import Prediction
 from tracker import ynyb_tracker
 
+import logging.config
 
 logging.config.fileConfig('logging.ini')
 logger = logging.getLogger('main')
 
+logging.getLogger('main').propagate = False
+logging.getLogger('predictions').propagate = False
+logging.getLogger('tracker').propagate = False
+
 
 def get_list_predictions():
-    # TODO: настроить логирование со всех модулей
     logger.info('Start take Tracker issues for data_predictions')
 
     list_issues = ynyb_tracker.get_issues()

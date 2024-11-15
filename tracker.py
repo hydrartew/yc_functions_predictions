@@ -1,11 +1,10 @@
-import logging.config
+import logging
 
 from yandex_tracker_client import TrackerClient
 from yandex_tracker_client.objects import Resource
 
 from config_data import settings
 
-logging.config.fileConfig('logging.ini')
 logger = logging.getLogger('tracker')
 
 
