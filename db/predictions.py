@@ -23,7 +23,7 @@ def __create_table_predictions_if_not_exists(_pool) -> None:
             """
             PRAGMA TablePathPrefix("{}");
             CREATE TABLE IF NOT EXISTS `{}` (
-                `prediction_id` Uint16 NOT NULL,
+                `prediction_id` Uint32 NOT NULL,
                 `accepted` Bool NOT NULL,
                 `author_tg_user_id` Uint64 NOT NULL,
                 `author_staff_login` Utf8 NOT NULL,
@@ -46,7 +46,7 @@ def __bulk_upsert(table_client, list_predictions: list[Prediction]) -> Any | Non
     logger.info(f"Start bulk upsert {table_name} with {[p.issue_key for p in list_predictions]}")
     column_types = (
         ydb.BulkUpsertColumns()
-        .add_column("prediction_id", ydb.OptionalType(ydb.PrimitiveType.Uint16))
+        .add_column("prediction_id", ydb.OptionalType(ydb.PrimitiveType.Uint32))
         .add_column("accepted", ydb.OptionalType(ydb.PrimitiveType.Bool))
         .add_column("author_tg_user_id", ydb.OptionalType(ydb.PrimitiveType.Uint64))
         .add_column("author_staff_login", ydb.OptionalType(ydb.PrimitiveType.Utf8))
