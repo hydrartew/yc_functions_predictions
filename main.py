@@ -38,7 +38,7 @@ def get_list_predictions():
     return _list_predictions
 
 
-def main(event=None, context=None) -> None:
+def handler(event=None, context=None) -> None:
     global list_issues
 
     if len(list_issues) == 0:
@@ -52,6 +52,8 @@ def main(event=None, context=None) -> None:
         return
     ynyb_tracker.change_key_tag(list_issues)
 
+    return
+
 
 if __name__ == '__main__':
-    main()
+    handler()
