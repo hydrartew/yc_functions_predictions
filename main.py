@@ -23,9 +23,6 @@ def get_list_predictions():
     logger.info('Start take Tracker issues for data_predictions')
     current_prediction_id = db.get_max_prediction_id()
 
-    if current_prediction_id != 0:
-        current_prediction_id += 1
-
     _list_predictions = []
     for prediction_id, issue in enumerate(list_issues, start=current_prediction_id):
         _list_predictions.append(
