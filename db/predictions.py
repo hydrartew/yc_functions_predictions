@@ -1,6 +1,7 @@
 import logging
 from typing import Any
 
+from faker import Faker
 import ydb
 import ydb.iam
 
@@ -125,3 +126,33 @@ def create_table_predictions():
         driver.wait(timeout=5, fail_fast=True)
         with ydb.SessionPool(driver) as pool:
             __create_table_predictions_if_not_exists(pool)
+
+
+def fill_test_data():
+    global table_name
+    table_name = 'test_predictions'
+
+    fake = Faker()
+
+    _list_predictions = []
+
+    for prediction_id in range(40_000):
+        _list_predictions.append(
+            Prediction(
+                prediction_id=prediction_id,
+                author_staff_login=fake.user_name(),
+                dttm_created=fake.date_time(),
+                text=fake.text(256),
+                issue_key=fake.text(10)
+            )
+        )
+
+    with ydb.Driver(
+        endpoint=settings.YDB_ENDPOINT,
+        database=settings.YDB_DATABASE,
+        credentials=credentials,
+    ) as driver:
+        driver.wait(timeout=5, fail_fast=True)
+        with ydb.SessionPool(driver) as pool:
+            __create_table_predictions_if_not_exists(pool)
+            add_list_predictions(_list_predictions)
