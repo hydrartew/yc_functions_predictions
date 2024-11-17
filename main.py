@@ -38,7 +38,7 @@ def get_list_predictions():
     return _list_predictions
 
 
-def main() -> None:
+def main(event=None, context=None) -> None:
     global list_issues
 
     if len(list_issues) == 0:
