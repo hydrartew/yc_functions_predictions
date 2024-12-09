@@ -30,8 +30,10 @@ class YNYBTracker:
         )
 
     def get_issues(self) -> list[Resource]:
-        logger.info('Start of the tracker issues search by filter')
+        logger.info('Starting searching for tracker issues by filter - {}'.format(self.filter_target_issues))
+
         issues = self.tracker_client.issues.find(self.filter_target_issues)
+
         logger.info(f'{len(issues)} tracker issues found')
 
         return issues

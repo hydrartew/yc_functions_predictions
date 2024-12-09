@@ -21,7 +21,7 @@ def get_list_predictions():
     global list_issues
 
     logger.info('Start take Tracker issues for data_predictions')
-    current_prediction_id = db.get_max_prediction_id()
+    current_prediction_id = db.get_max_prediction_id() + 1
 
     _list_predictions = []
     for prediction_id, issue in enumerate(list_issues, start=current_prediction_id):
@@ -34,7 +34,7 @@ def get_list_predictions():
                 issue_key=issue.key
             )
         )
-    logger.info(f'The list predictions was received successfully: {_list_predictions}')
+    logger.info('The list predictions was received successfully')
     return _list_predictions
 
 
