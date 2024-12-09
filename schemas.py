@@ -6,10 +6,8 @@ from pydantic import BaseModel, field_validator
 class Prediction(BaseModel):
     prediction_id: int
     accepted: bool = True
-    author_tg_user_id: int = 0
     author_staff_login: str = 'admin'
     dttm_created: datetime
-    dttm_last_usage: datetime = datetime(2100, 1, 1)
     text: str
     issue_key: str | None = None
 

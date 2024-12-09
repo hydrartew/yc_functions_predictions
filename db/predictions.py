@@ -26,10 +26,8 @@ def __create_table_predictions_if_not_exists(_pool) -> None:
             CREATE TABLE IF NOT EXISTS `{}` (
                 `prediction_id` Uint32 NOT NULL,
                 `accepted` Bool NOT NULL,
-                `author_tg_user_id` Uint64 NOT NULL,
                 `author_staff_login` Utf8 NOT NULL,
                 `dttm_created` Timestamp NOT NULL,
-                `dttm_last_usage` Timestamp,
                 `text` Utf8 NOT NULL,
                 `issue_key` Utf8,
                 PRIMARY KEY (`prediction_id`)
@@ -49,10 +47,8 @@ def __bulk_upsert(table_client, list_predictions: list[Prediction]) -> Any | Non
         ydb.BulkUpsertColumns()
         .add_column("prediction_id", ydb.OptionalType(ydb.PrimitiveType.Uint32))
         .add_column("accepted", ydb.OptionalType(ydb.PrimitiveType.Bool))
-        .add_column("author_tg_user_id", ydb.OptionalType(ydb.PrimitiveType.Uint64))
         .add_column("author_staff_login", ydb.OptionalType(ydb.PrimitiveType.Utf8))
         .add_column("dttm_created", ydb.OptionalType(ydb.PrimitiveType.Timestamp))
-        .add_column("dttm_last_usage", ydb.OptionalType(ydb.PrimitiveType.Timestamp))
         .add_column("text", ydb.OptionalType(ydb.PrimitiveType.Utf8))
         .add_column("issue_key", ydb.OptionalType(ydb.PrimitiveType.Utf8))
     )
