@@ -41,7 +41,9 @@ def fill_db_data():
     with open("good_predictions.json", "r+", encoding='utf-8') as f:
         good_predictions = json.load(f)
 
-    fill_data_predictions(good_predictions)
+    flag = str(input("Добавляем good_predictions в БД (д/н)?: "))
+    if flag.lower() == 'д' or flag.lower() == '':
+        fill_data_predictions(good_predictions)
 
 
 if __name__ == "__main__":
