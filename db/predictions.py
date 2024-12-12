@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from typing import Any
 
 from faker import Faker
@@ -153,3 +154,19 @@ def fill_test_data():
         with ydb.SessionPool(driver) as pool:
             __create_table_predictions_if_not_exists(pool)
             add_list_predictions(_list_predictions)
+
+
+def fill_data_predictions(data_predictions: list[str]) -> None:
+    _list_predictions_to_add = []
+    current_prediction_id = get_max_prediction_id() + 1
+
+    for prediction_id, text in enumerate(data_predictions, start=current_prediction_id):
+        _list_predictions_to_add.append(
+            Prediction(
+                prediction_id=prediction_id,
+                dttm_created=datetime.now(),
+                text=text
+            )
+        )
+
+    add_list_predictions(_list_predictions_to_add)
