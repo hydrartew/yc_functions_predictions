@@ -1,1 +1,1 @@
-Script for telegram bot [**hydrartew/yandex_new_year_bot**](https://github.com/hydrartew/yc_functions_predictions) for add processed predictions from **Yandex Tracker** to database **YDB**
+Script for telegram bot [**hydrartew/yandex_new_year_bot**](hydrartew/yandex_new_year_bot) for add processed predictions from **Yandex Tracker** to database **YDB**
